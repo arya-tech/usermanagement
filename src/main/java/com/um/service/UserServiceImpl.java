@@ -1,5 +1,6 @@
 package com.um.service;
 
+import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,9 +79,25 @@ public class UserServiceImpl implements UserService {
 		}
 		return false;
 	}
+	
+	 public  String generateRandomPassword(int len)
+	    {
+	        final String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+	 
+	        SecureRandom random = new SecureRandom();
+	        StringBuilder sb = new StringBuilder();
+	        for (int i = 0; i < len; i++) {
+	            int randomIndex = random.nextInt(chars.length());
+	            sb.append(chars.charAt(randomIndex));
+	        }
+	        return sb.toString();
+	    }
+	
 
 	@Override
 	public String saveUser(User user) {
+		user.setAccStatus("LOCKED");
+		user.setPwd(generateRandomPassword(8));
 		User savedUser = userRepositories.save(user);
 		if(savedUser!=null) {
 			return "user data saved successfully";
