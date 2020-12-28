@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public Map<Integer, String> findByStates(Integer countryId) {
-		List<State> listOfStates=stateRepositories.findCountryById(countryId);
+		List<State> listOfStates=stateRepositories.findByCountryId(countryId);
 		Map<Integer, String> states=new HashMap<>();
 		listOfStates.forEach(state->{
 			states.put(state.getStateId(), state.getStateName());
@@ -74,7 +74,7 @@ public class UserServiceImpl implements UserService {
 		
 		User userDetails = userRepositories.findByEmail(emailId);
 		String emailAvailaible=userDetails.getEmail();
-		if(emailAvailaible!=null) {
+		if(emailAvailaible==null) {
 			return true;
 		}
 		return false;
@@ -118,6 +118,9 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public String unlockAccount(String emailId, String newPwd) {
+		User unlockUserAcc = userRepositories.findByEmail(emailId);
+		unlockUserAcc.setAccStatus("UNLOCKED");
+		userRepositories.save(unlockUserAcc);
 		return "account unlocked please sign up again";
 	}
 

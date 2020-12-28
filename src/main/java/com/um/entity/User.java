@@ -4,12 +4,19 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
 
+
 @Entity
+
 @Table(name = "USER_MASTER")
 public class User {
+	@Id
+	@Column(name="USER_ID")
+	protected int userId;
+
 	@Column(name = "FIRST_NAME")
 	protected String firstName;
 	@Column(name = "LAST_NAME")
@@ -97,6 +104,13 @@ public class User {
 	}
 	public void setAccStatus(String accStatus) {
 		this.accStatus = accStatus;
+	}
+	
+	public int getUserId() {
+		return userId;
+	}
+	public void setUserId(int userId) {
+		this.userId = userId;
 	}
 	
 

@@ -2,11 +2,13 @@ package com.um.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "STATE_MASTER")
 public class State {
+	@Id
 	@Column(name = "STATE_ID")
 	protected Integer stateId;
 	@Column(name = "STATE_NAME")

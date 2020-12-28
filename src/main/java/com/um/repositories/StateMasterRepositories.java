@@ -11,6 +11,6 @@ import com.um.entity.State;
 @Repository
 public interface StateMasterRepositories extends JpaRepository<State, Serializable> {
 	
-	public List<State> findCountryById(Integer countryId);
+	public List<State> findByCountryId(Integer countryId);
 
 }
