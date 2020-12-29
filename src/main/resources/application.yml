@@ -7,8 +7,21 @@ spring:
     username: root
     password: root
     
+  spring:
+      mail:
+       host: smtp.gmail.com  
+       port: 587
+       username: aryadewan123@gmail.com
+       password: shivajitheboss
+       properties: 
+                mail: 
+                  smtp: 
+                    auth: true 
+                    starttls:
+                      enable: true
+    
    
-  mvc:
+mvc:
     views:
       prefix: /views/
       suffix: .jsp

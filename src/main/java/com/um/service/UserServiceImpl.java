@@ -73,8 +73,8 @@ public class UserServiceImpl implements UserService {
 	public boolean isEmailUnique(String emailId) {
 		
 		User userDetails = userRepositories.findByEmail(emailId);
-		String emailAvailaible=userDetails.getEmail();
-		if(emailAvailaible==null) {
+		//String emailAvailaible=userDetails.getEmail();
+		if(userDetails==null) {
 			return true;
 		}
 		return false;

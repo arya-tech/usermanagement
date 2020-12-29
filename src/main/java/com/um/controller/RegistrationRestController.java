@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.um.entity.User;
+import com.um.email.service.EmailService;
 import com.um.service.UserServiceImpl;
 
 @RestController
@@ -21,6 +22,9 @@ public class RegistrationRestController {
 	
 	@Autowired
 	public UserServiceImpl userService;
+	
+	@Autowired
+	public EmailService emailService;
 	
 	@GetMapping("/loadRegForm")
 	public String loadForm(Model model) {
@@ -44,9 +48,9 @@ public class RegistrationRestController {
 		return userService.findByCities(stateId);
 	}
 	
-	@GetMapping(value = "/emailCheck")
-	public String isEmailUnique(String emailId) {
-		if(userService.isEmailUnique(emailId)) {
+	@GetMapping(value = "/emailCheck/{emailId}")
+	public String isEmailUnique(@PathVariable String emailId) {
+		if(userService.isEmailUnique(emailId)==true) {
 			return "true";
 		}
 		return "false";
@@ -59,7 +63,14 @@ public class RegistrationRestController {
 		if(savedUser!=null) {
 			return new ResponseEntity<>("user registered successfully", HttpStatus.CREATED);
 		}
+		
 		return new ResponseEntity<>("faild to register the user",HttpStatus.BAD_REQUEST);
+	}
+	
+	@PostMapping(value = "/sendEmail/{toUser}/{subject}/{msgBody}")
+	public ResponseEntity<String> sendEmailToRegisteredUser(@PathVariable String toUser,@PathVariable  String subject, @PathVariable  String msgBody){
+		emailService.sendEmail(toUser, subject, msgBody);
+		return new ResponseEntity<String>("email send successfully",HttpStatus.CREATED);
 	}
 
 }

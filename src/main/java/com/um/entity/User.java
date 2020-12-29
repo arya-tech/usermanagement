@@ -5,12 +5,13 @@ import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+//import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 
 
 @Entity
-
+//@NamedQuery(name = "User.findByEmail", query = "FROM User WHERE email = ?1")
 @Table(name = "USER_MASTER")
 public class User {
 	@Id
