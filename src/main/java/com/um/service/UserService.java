@@ -25,5 +25,7 @@ public interface UserService {
 	
 	public String loginCheck(String emailId, String pwd);
 	
+	public String getUnlockAccEmailBody(User user);
+	
 
 }

@@ -2,6 +2,7 @@ package com.um.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import com.um.entity.User;
 import com.um.repositories.UserMasterRepositories;
@@ -16,7 +17,7 @@ public class UnlockAccountController {
 	@Autowired
 	public UserMasterRepositories userRepositories;
 	
-	
+	@PostMapping
 	public String unlockAccount(String emailId,String tempPwd) {
 		if(userService.isTempPwdValid(emailId, tempPwd)==true) {
 			User userInfo = userRepositories.findByEmail(emailId);

@@ -1,0 +1,8 @@
+hi {firstname}, {lastname} :</br>
+	welcome to IES family, your registration is alomost complete.</br>
+	please unlock your account using below details.</br>
+	Temporary password : {temp-pwd}</br>
+	<a href="http://localhost:9090/unlockAcc?email={email}"> click here to unlock your account</a></br>
+	Thanks & Regards,</br>
+	IES team.</br>
+	

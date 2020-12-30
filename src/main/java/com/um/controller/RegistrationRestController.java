@@ -61,16 +61,19 @@ public class RegistrationRestController {
 	public ResponseEntity<String> userRegistration(@RequestBody User userInfo) {
 		String savedUser = userService.saveUser(userInfo);
 		if(savedUser!=null) {
-			return new ResponseEntity<>("user registered successfully", HttpStatus.CREATED);
+			emailService.sendEmail(userInfo.getEmail(), "to unlock account", userService.getUnlockAccEmailBody(userInfo));
+			return new ResponseEntity<>("user registered successfully, please check your email to unlock the account", HttpStatus.CREATED);
 		}
 		
 		return new ResponseEntity<>("faild to register the user",HttpStatus.BAD_REQUEST);
 	}
 	
-	@PostMapping(value = "/sendEmail/{toUser}/{subject}/{msgBody}")
-	public ResponseEntity<String> sendEmailToRegisteredUser(@PathVariable String toUser,@PathVariable  String subject, @PathVariable  String msgBody){
-		emailService.sendEmail(toUser, subject, msgBody);
-		return new ResponseEntity<String>("email send successfully",HttpStatus.CREATED);
-	}
+	/*
+	 * @PostMapping(value = "/sendEmail/{toUser}/{subject}/{msgBody}") public
+	 * ResponseEntity<String> sendEmailToRegisteredUser(@PathVariable String
+	 * toUser,@PathVariable String subject, @PathVariable String msgBody){
+	 * emailService.sendEmail(toUser, subject, msgBody); return new
+	 * ResponseEntity<String>("email send successfully",HttpStatus.CREATED); }
+	 */
 
 }
