@@ -59,21 +59,23 @@ public class RegistrationRestController {
 	
 	@PostMapping(value= "/registration", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> userRegistration(@RequestBody User userInfo) {
+		if(userService.isEmailUnique(userInfo.getEmail())) {
 		String savedUser = userService.saveUser(userInfo);
 		if(savedUser!=null) {
-			emailService.sendEmail(userInfo.getEmail(), "to unlock account", userService.getUnlockAccEmailBody(userInfo));
+			
 			return new ResponseEntity<>("user registered successfully, please check your email to unlock the account", HttpStatus.CREATED);
 		}
-		
+		}
 		return new ResponseEntity<>("faild to register the user",HttpStatus.BAD_REQUEST);
 	}
 	
-	/*
-	 * @PostMapping(value = "/sendEmail/{toUser}/{subject}/{msgBody}") public
-	 * ResponseEntity<String> sendEmailToRegisteredUser(@PathVariable String
-	 * toUser,@PathVariable String subject, @PathVariable String msgBody){
-	 * emailService.sendEmail(toUser, subject, msgBody); return new
-	 * ResponseEntity<String>("email send successfully",HttpStatus.CREATED); }
-	 */
-
+	@PostMapping(value="/login/{emailId}/{pwd}")
+	public ResponseEntity<String> loginCheck(@PathVariable String emailId, @PathVariable String pwd){
+		String loginCheckStatus = userService.loginCheck(emailId, pwd);
+		if(loginCheckStatus!=null) {
+			return new ResponseEntity<String>("Login success!!!!",HttpStatus.CREATED);
+		}
+		return new ResponseEntity<String>("username or password invalid",HttpStatus.BAD_REQUEST);
+		
+	}
 }

@@ -3,20 +3,25 @@ package com.um.service;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.SecureRandom;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.um.email.service.IEmailServices;
+import com.um.email.service.EmailService;
 import com.um.entity.City;
 import com.um.entity.Country;
 import com.um.entity.State;
 import com.um.entity.User;
+import com.um.model.UnlockAccount;
 import com.um.repositories.CityMasterRepositories;
 import com.um.repositories.CountryMasterRepositories;
 import com.um.repositories.StateMasterRepositories;
@@ -36,8 +41,10 @@ public class UserServiceImpl implements UserService {
 
 	@Autowired
 	private CityMasterRepositories cityRepositories;
-
-
+    
+	@Autowired
+	private EmailService emailService;
+	
 	@Override
 	public Map<Integer, String> findByCountries() {
 		List<Country> listOfCountries = countryRepositories.findAll();
@@ -96,6 +103,7 @@ public class UserServiceImpl implements UserService {
 		user.setPwd(generateRandomPassword(8));
 		User savedUser = userRepositories.save(user);
 		if (savedUser != null) {
+			emailService.sendEmail(user.getEmail(), "to unlock account", getUnlockAccEmailBody(user));
 			return "user data saved successfully";
 		}
 		return "failed to save the user";
@@ -111,17 +119,25 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public String unlockAccount(String emailId, String newPwd) {
-		User unlockUserAcc = userRepositories.findByEmail(emailId);
-		unlockUserAcc.setAccStatus("UNLOCKED");
-		userRepositories.save(unlockUserAcc);
-		return "account unlocked please sign up again";
+	public String unlockAccount(UnlockAccount unlockAccount) {
+		User unlockUserAcc = userRepositories.findByEmail(unlockAccount.getEmailId());
+		if(unlockUserAcc!=null && unlockUserAcc.getPwd().equals(unlockAccount.getTempPwd())) {
+			
+			if(unlockAccount.getNewPwd().equals(unlockAccount.getCnfNewPwd())) {
+				unlockUserAcc.setPwd(unlockAccount.getCnfNewPwd());
+			}
+			unlockUserAcc.setAccStatus("UNLOCKED");
+			userRepositories.save(unlockUserAcc);
+			return "account unlocked please sign up to login";	
+		}
+		return "failed to unlock the account";
 	}
 
 	@Override
 	public String forgotPassword(String emailId) {
-		// check the email is valid and present in databas then send the password by
-		// email link.
+		if(isEmailUnique(emailId)==false) {
+			
+		}
 		return null;
 	}
 
@@ -141,36 +157,24 @@ public class UserServiceImpl implements UserService {
 	
 	@Override
 	public String getUnlockAccEmailBody(User user) {
-		StringBuffer stringBuffer=new StringBuffer();
+		
+		String fileName="unlock-account.txt";
+		List<String> replacedLines=null;
+		String mailBody=null;
 		try {
-			File file=new File("unlock-account.txt");
-			FileReader fileReader=new FileReader(file);
-			BufferedReader bufferedReader=new BufferedReader(fileReader);
-			String line=bufferedReader.readLine();
-			while(line!=null) {
-				if(line.contains("{firstname}")) {
-					line=line.replace("{firstname}", user.getFirstName());
-				}
-				if(line.contains("{lastname}")) {
-					line=line.replace("{lastname}", user.getLastName());
-				}
-				if(line.contains("{temp-pwd}")) {
-					line=line.replace("{temp-pwd}", user.getPwd());
-				}
-				if(line.contains("{email}")) {
-					line=line.replace("{email}", user.getEmail());
-				}
-				stringBuffer.append(line);
-				
-				line=bufferedReader.readLine();
-			}
-			bufferedReader.close();
+			Path path=Paths.get(fileName, "");
+			Stream<String> lines= Files.lines(path);
+			replacedLines=lines.map(line->line.replace("{firstname}", user.getFirstName())
+					.replace("{lastname}", user.getLastName())
+					.replace("{temp-pwd}", user.getPwd())
+					.replace("{email}", user.getEmail())).collect(Collectors.toList());
 			
+			mailBody=String.join("", replacedLines);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
-		return stringBuffer.toString();
+		return mailBody;
 	}
 
 }

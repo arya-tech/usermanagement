@@ -3,6 +3,7 @@ package com.um.service;
 import java.util.Map;
 
 import com.um.entity.User;
+import com.um.model.UnlockAccount;
 
 public interface UserService {
 	
@@ -18,7 +19,7 @@ public interface UserService {
 	
 	public boolean isTempPwdValid(String emailId, String tempPwd);
 	
-	public String unlockAccount(String emailId, String newPwd);
+	public String unlockAccount(UnlockAccount unlockAccount);
 	
 	public String forgotPassword(String emailId);
 	
@@ -26,6 +27,8 @@ public interface UserService {
 	public String loginCheck(String emailId, String pwd);
 	
 	public String getUnlockAccEmailBody(User user);
+	
+	
 	
 
 }
